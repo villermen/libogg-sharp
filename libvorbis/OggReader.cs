@@ -29,15 +29,15 @@
         {
             var oggPage = new libogg.ogg_page();
 
-            while (libogg.ogg_sync_pageout(ref syncState, ref oggPage) != 1)
+            while (libogg.ogg_sync_pageout(ref this.syncState, ref oggPage) != 1)
             {
-                var bufferPtr = libogg.ogg_sync_buffer(ref syncState, 4096);
+                var bufferPtr = libogg.ogg_sync_buffer(ref this.syncState, 4096);
 
                 var readBytes = this.reader.ReadBytes(4096);
 
                 if (readBytes.Length == 0)
                 {
-                    break;
+                    return null;
                 }
 
                 Marshal.Copy(readBytes, 0, bufferPtr, readBytes.Length);

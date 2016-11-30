@@ -11,6 +11,11 @@
                 while (true)
                 {
                     var page = reader.ReadPage();
+
+                    if (page == null)
+                    {
+                        break;
+                    }
                 }
             }
         }
