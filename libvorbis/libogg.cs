@@ -289,45 +289,78 @@ namespace libvorbis
         /// Buffer to be used for writing.
         /// This is an ordinary data buffer with some extra markers to ease bit navigation and manipulation.
         /// </param>
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_writeinit")]
         public static unsafe extern void oggpack_writeinit(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_writecheck")]
         public static unsafe extern int oggpack_writecheck(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_reset")]
         public static unsafe extern void oggpack_reset(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_writetrunc")]
         public static unsafe extern void oggpack_writetrunc(oggpack_buffer* b, long bits);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_writealign")]
         public static unsafe extern void oggpack_writealign(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_writecopy")]
         public static unsafe extern void oggpack_writecopy(oggpack_buffer* b, void* source, long bits);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_writeclear")]
         public static unsafe extern void oggpack_writeclear(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_readinit")]
         public static unsafe extern void oggpack_readinit(oggpack_buffer* b, byte* buffer, int bytes);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_write")]
         public static unsafe extern void oggpack_write(oggpack_buffer* b, ulong value, int bits);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_look")]
         public static unsafe extern long oggpack_look(oggpack_buffer* b, int bits);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_look1")]
         public static unsafe extern long oggpack_look1(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_adv")]
         public static unsafe extern void oggpack_adv(oggpack_buffer* b, int bits);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_adv1")]
         public static unsafe extern void oggpack_adv1(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_read")]
         public static unsafe extern long oggpack_read(oggpack_buffer* b, int bits);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_read1")]
         public static unsafe extern long oggpack_read1(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_bytes")]
         public static unsafe extern long oggpack_bytes(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_bits")]
         public static unsafe extern long oggpack_bits(oggpack_buffer* b);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "oggpack_get_buffer")]
         public static unsafe extern byte* oggpack_get_buffer(oggpack_buffer* b);
 
         #endregion
 
         #region Decoding
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_init")]
+        public static extern unsafe int ogg_sync_init(ogg_sync_state* oy);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_check")]
+        public static extern unsafe int ogg_sync_check(ogg_sync_state* oy);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_clear")]
+        public static extern unsafe int ogg_sync_clear(ogg_sync_state* oy);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_destroy")]
+        public static extern unsafe int ogg_sync_destroy(ogg_sync_state* oy);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_reset")]
+        public static extern unsafe int ogg_sync_reset(ogg_sync_state* oy);
 
         /// <summary>
         /// This function is used to provide a properly-sized buffer for writing.
@@ -357,17 +390,43 @@ namespace libvorbis
         [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_wrote")]
         public static extern int ogg_sync_wrote(ref ogg_sync_state oy, long bytes);
 
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_pageseek")]
+        public static extern unsafe int ogg_sync_pageseek(ogg_sync_state* oy, ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_sync_pageout")]
+        public static extern unsafe int ogg_sync_pageout(ogg_sync_state* oy, ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_pagein")]
+        public static extern unsafe int ogg_stream_pagein(ogg_stream_state* os, ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_packetout")]
+        public static extern unsafe int ogg_stream_packetout(ogg_stream_state* os, ogg_packet* op);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_packetpeek")]
+        public static extern unsafe int ogg_stream_packetpeek(ogg_stream_state* os, ogg_packet* op);
+
         #endregion
 
-
-
         #region Encoding
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_packetin")]
+        public static extern unsafe int ogg_stream_packetin(ogg_stream_state* os, ogg_packet* op);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_pageout")]
+        public static extern unsafe int ogg_stream_pageout(ogg_stream_state* os, ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_pageout_fill")]
+        public static extern unsafe int ogg_stream_pageout_fill(ogg_stream_state* os, ogg_page* og, int fillbytes);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_flush")]
+        public static extern unsafe int ogg_stream_flush(ogg_stream_state* os, ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_flush_fill")]
+        public static extern unsafe int ogg_stream_flush_fill(ogg_stream_state* os, ogg_page* og, int fillbytes);
 
         #endregion
 
         #region General
-
-
 
         #endregion
     }
