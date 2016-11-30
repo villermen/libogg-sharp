@@ -1,5 +1,8 @@
 ﻿// ReSharper disable All
 
+// TODO: Add documentation to undocumented methods
+
+
 namespace libvorbis
 {
     using System;
@@ -29,10 +32,12 @@ namespace libvorbis
             }
         }
 
-         //typedef __int32 ogg_int32_t;
-         //typedef unsigned __int32 ogg_uint32_t;
-         //   typedef __int16 ogg_int16_t;
-         //typedef unsigned __int16 ogg_uint16_t;
+        /* TODO: Implement remaining typedefs
+         * typedef __int32 ogg_int32_t;
+         * typedef unsigned __int32 ogg_uint32_t;
+         * typedef __int16 ogg_int16_t;
+         * typedef unsigned __int16 ogg_uint16_t;
+         */
 
         /// <summary>
         /// The <see cref="oggpack_buffer"/> struct is used with libogg's bitpacking functions. You should never need to directly access anything in this structure.
@@ -427,6 +432,54 @@ namespace libvorbis
         #endregion
 
         #region General
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_init")]
+        public static extern unsafe int ogg_stream_init(ogg_stream_state* os, int serialno);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_check")]
+        public static extern unsafe int ogg_stream_check(ogg_stream_state* os);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_clear")]
+        public static extern unsafe int ogg_stream_clear(ogg_stream_state* os);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_reset")]
+        public static extern unsafe int ogg_stream_reset(ogg_stream_state* os);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_reset_serialno")]
+        public static extern unsafe int ogg_stream_reset_serialno(ogg_stream_state* os, int serialno);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_stream_destroy")]
+        public static extern unsafe int ogg_stream_destroy(ogg_stream_state* os);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_version")]
+        public static extern unsafe int ogg_page_version(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_continued")]
+        public static extern unsafe int ogg_page_continued(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_packets")]
+        public static extern unsafe int ogg_page_packets(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_bos")]
+        public static extern unsafe int ogg_page_bos(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_eos")]
+        public static extern unsafe int ogg_page_eos(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_granulepos")]
+        public static extern unsafe ogg_int64_t ogg_page_granulepos(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_serialno")]
+        public static extern unsafe int ogg_page_serialno(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_pageno")]
+        public static extern unsafe long ogg_page_pageno(ogg_page* og);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_packet_clear")]
+        public static extern unsafe void ogg_packet_clear(ogg_packet* op);
+
+        [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_checksum_set")]
+        public static extern unsafe int ogg_page_checksum_set(ogg_page* og);
 
         #endregion
     }
