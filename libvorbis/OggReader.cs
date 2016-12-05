@@ -3,7 +3,6 @@
     using System;
     using System.IO;
     using System.Runtime.InteropServices;
-    using System.Runtime.Remoting.Messaging;
 
     public class OggReader : IDisposable
     {
@@ -48,13 +47,7 @@
                 }
             }
 
-            var header = new byte[oggPage.header_len];
-            Marshal.Copy(oggPage.header, header, 0, oggPage.header_len);
-
-            var body = new byte[oggPage.body_len];
-            Marshal.Copy(oggPage.body, body, 0, oggPage.body_len);
-
-            return new OggPage(header, body);
+            return new OggPage(oggPage);
         }
 
         public void Dispose()
