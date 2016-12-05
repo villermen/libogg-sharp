@@ -6,9 +6,39 @@
     {
         private libogg.ogg_page backingPage;
 
-        public byte[] Body {get; }
+        internal libogg.ogg_page BackingPage => this.backingPage;
 
-        public byte[] Header { get; }
+        private byte[] body;
+
+        public byte[] Body
+        {
+            get
+            {
+                if (this.body == null)
+                {
+                    this.body = new byte[this.BackingPage.body_len];
+                    Marshal.Copy(this.BackingPage.body, this.body, 0, this.BackingPage.body_len);
+                }
+
+                return this.body;
+            }
+        }
+
+        private byte[] header;
+
+        public byte[] Header
+        {
+            get
+            {
+                if (this.header == null)
+                {
+                    this.header = new byte[this.BackingPage.header_len];
+                    Marshal.Copy(this.BackingPage.header, this.header, 0, this.BackingPage.header_len);
+                }
+
+                return this.header;
+            }
+        }
 
         public bool IsBeginOfStream => libogg.ogg_page_bos(ref this.backingPage) > 0;
 
@@ -29,12 +59,6 @@
         public OggPage(libogg.ogg_page backingPage)
         {
             this.backingPage = backingPage;
-
-            var header = new byte[backingPage.header_len];
-            Marshal.Copy(backingPage.header, header, 0, backingPage.header_len);
-
-            var body = new byte[backingPage.body_len];
-            Marshal.Copy(backingPage.body, body, 0, backingPage.body_len);
         }
     }
 }

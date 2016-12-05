@@ -36,7 +36,7 @@
 
                 if (readBytes.Length == 0)
                 {
-                    return null;
+                    throw new InvalidOperationException("No more data in stream.");
                 }
 
                 Marshal.Copy(readBytes, 0, bufferPtr, readBytes.Length);

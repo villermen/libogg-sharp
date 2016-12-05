@@ -177,6 +177,7 @@ namespace libvorbis
             /// 
             /// byte[282]
             /// </summary>
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 282)]
             public byte[] header;
 
             /// <summary>
@@ -206,17 +207,15 @@ namespace libvorbis
 
             /// <summary>
             /// Number of the current packet.
-            /// 
-            /// ogg_int64_t*
             /// </summary>
-            public IntPtr packetno;
+            public ogg_int64_t packetno;
 
             /// <summary>
             /// Exact position of decoding/encoding process.
             /// 
             /// ogg_int64_t*
             /// </summary>
-            public IntPtr granulepos;
+            public ogg_int64_t granulepos;
         }
 
         /// <summary>

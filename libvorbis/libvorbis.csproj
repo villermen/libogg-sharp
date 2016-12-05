@@ -47,6 +47,7 @@
     <Compile Include="libogg.cs" />
     <Compile Include="OggPage.cs" />
     <Compile Include="OggReader.cs" />
+    <Compile Include="OggWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
