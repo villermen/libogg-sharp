@@ -24,8 +24,8 @@
 
         public void Write(OggPage page)
         {
-            var backingPage = page.BackingPage;
-            var result = libogg.ogg_stream_pagein(ref this.streamState, ref backingPage);
+            var liboggPage = (libogg.ogg_page)page;
+            var result = libogg.ogg_stream_pagein(ref this.streamState, ref liboggPage);
 
             if (result != 0)
             {

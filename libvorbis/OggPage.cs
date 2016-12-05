@@ -6,8 +6,6 @@
     {
         private libogg.ogg_page backingPage;
 
-        internal libogg.ogg_page BackingPage => this.backingPage;
-
         private byte[] body;
 
         public byte[] Body
@@ -16,8 +14,8 @@
             {
                 if (this.body == null)
                 {
-                    this.body = new byte[this.BackingPage.body_len];
-                    Marshal.Copy(this.BackingPage.body, this.body, 0, this.BackingPage.body_len);
+                    this.body = new byte[this.backingPage.body_len];
+                    Marshal.Copy(this.backingPage.body, this.body, 0, this.backingPage.body_len);
                 }
 
                 return this.body;
@@ -32,8 +30,8 @@
             {
                 if (this.header == null)
                 {
-                    this.header = new byte[this.BackingPage.header_len];
-                    Marshal.Copy(this.BackingPage.header, this.header, 0, this.BackingPage.header_len);
+                    this.header = new byte[this.backingPage.header_len];
+                    Marshal.Copy(this.backingPage.header, this.header, 0, this.backingPage.header_len);
                 }
 
                 return this.header;
@@ -59,6 +57,22 @@
         public OggPage(libogg.ogg_page backingPage)
         {
             this.backingPage = backingPage;
+        }
+
+        public static explicit operator libogg.ogg_page(OggPage page)
+        {
+            var liboggPage = new libogg.ogg_page
+            {
+                body_len = page.Body.Length,
+                body = Marshal.AllocHGlobal(page.Body.Length),
+                header_len = page.Header.Length,
+                header = Marshal.AllocHGlobal(page.Header.Length)
+            };
+
+            Marshal.Copy(page.Body, 0, liboggPage.body, page.Body.Length);
+            Marshal.Copy(page.Header, 0, liboggPage.header, page.Header.Length);
+
+            return liboggPage;
         }
     }
 }

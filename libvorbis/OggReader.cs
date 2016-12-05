@@ -50,6 +50,11 @@
             return new OggPage(oggPage);
         }
 
+        public OggPacket ReadPacket()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             this.reader.Dispose();
