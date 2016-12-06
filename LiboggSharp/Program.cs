@@ -9,16 +9,19 @@
             using (var reader = new OggReader(File.OpenRead("sample.ogg")))
             using (var writer = new OggWriter(File.OpenWrite("sample-written.ogg")))
             {
+                var i = 0;
                 while (true)
                 {
-                    var page = reader.ReadPage();
+                    var packet = reader.ReadPacket();
 
-                    writer.Write(page);
+                    writer.Write(packet);
 
-                    if (page.IsEndOfStream)
+                    if (packet.IsEndOfStream)
                     {
                         break;
                     }
+
+                    i++;
                 }
 
                 writer.Flush();

@@ -59,18 +59,18 @@
             this.backingPage = backingPage;
         }
 
-        public static explicit operator libogg.ogg_page(OggPage page)
+        public libogg.ogg_page ToLiboggPage()
         {
             var liboggPage = new libogg.ogg_page
             {
-                body_len = page.Body.Length,
-                body = Marshal.AllocHGlobal(page.Body.Length),
-                header_len = page.Header.Length,
-                header = Marshal.AllocHGlobal(page.Header.Length)
+                body_len = this.Body.Length,
+                body = Marshal.AllocHGlobal(this.Body.Length),
+                header_len = this.Header.Length,
+                header = Marshal.AllocHGlobal(this.Header.Length)
             };
 
-            Marshal.Copy(page.Body, 0, liboggPage.body, page.Body.Length);
-            Marshal.Copy(page.Header, 0, liboggPage.header, page.Header.Length);
+            Marshal.Copy(this.Body, 0, liboggPage.body, this.Body.Length);
+            Marshal.Copy(this.Header, 0, liboggPage.header, this.Header.Length);
 
             return liboggPage;
         }

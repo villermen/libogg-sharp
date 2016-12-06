@@ -12,33 +12,6 @@ namespace Villermen.LiboggSharp
     {
         #region Structures
 
-        public struct ogg_int64_t
-        {
-            private int value;
-
-            private ogg_int64_t(int val)
-            {
-                value = val;
-            }
-
-            public static implicit operator ogg_int64_t(int val)
-            {
-                return new ogg_int64_t(val);
-            }
-
-            public static implicit operator int(ogg_int64_t val)
-            {
-                return val.value;
-            }
-        }
-
-        /* TODO: Implement remaining typedefs
-         * typedef __int32 ogg_int32_t;
-         * typedef unsigned __int32 ogg_uint32_t;
-         * typedef __int16 ogg_int16_t;
-         * typedef unsigned __int16 ogg_uint16_t;
-         */
-
         /// <summary>
         /// The <see cref="oggpack_buffer"/> struct is used with libogg's bitpacking functions. You should never need to directly access anything in this structure.
         /// </summary>
@@ -208,14 +181,12 @@ namespace Villermen.LiboggSharp
             /// <summary>
             /// Number of the current packet.
             /// </summary>
-            public ogg_int64_t packetno;
+            public long packetno;
 
             /// <summary>
             /// Exact position of decoding/encoding process.
-            /// 
-            /// ogg_int64_t*
             /// </summary>
-            public ogg_int64_t granulepos;
+            public long granulepos;
         }
 
         /// <summary>
@@ -254,12 +225,12 @@ namespace Villermen.LiboggSharp
             /// A number indicating the position of this packet in the decoded data.
             /// This is the last sample, frame or other unit of information ('granule') that can be completely decoded from this packet.
             /// </summary>
-            public ogg_int64_t ganulepos;
+            public long granulepos;
 
             /// <summary>
             /// Sequential number of this packet in the ogg bitstream.
             /// </summary>
-            public ogg_int64_t packetno;
+            public long packetno;
         }
 
         /// <summary>
@@ -510,7 +481,7 @@ namespace Villermen.LiboggSharp
         public static extern int ogg_page_eos(ref ogg_page og);
 
         [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_granulepos")]
-        public static extern ogg_int64_t ogg_page_granulepos(ref ogg_page og);
+        public static extern long ogg_page_granulepos(ref ogg_page og);
 
         [DllImport("libogg.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ogg_page_serialno")]
         public static extern int ogg_page_serialno(ref ogg_page og);

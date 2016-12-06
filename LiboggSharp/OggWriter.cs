@@ -9,12 +9,20 @@
 
         private BinaryWriter writer;
 
+        public int SerialNumber { get; }
+
         public OggWriter(Stream stream)
+            : this(stream, new Random().Next())
+        { 
+        }
+
+        public OggWriter(Stream stream, int serialNumber)
         {
             this.writer = new BinaryWriter(stream);
             this.streamState = new libogg.ogg_stream_state();
+            this.SerialNumber = serialNumber;
 
-            var result = libogg.ogg_stream_init(ref this.streamState, new Random().Next());
+            var result = libogg.ogg_stream_init(ref this.streamState, this.SerialNumber);
 
             if (result != 0)
             {
@@ -24,12 +32,25 @@
 
         public void Write(OggPage page)
         {
-            var liboggPage = (libogg.ogg_page)page;
+            var liboggPage = page.ToLiboggPage();
             var result = libogg.ogg_stream_pagein(ref this.streamState, ref liboggPage);
 
             if (result != 0)
             {
                 throw new Exception("Page to write does not match the serial number of the bitstream, the page version is incorrect or libogg encountered an internal error.");
+            }
+
+            this.Flush(false);
+        }
+
+        public void Write(OggPacket packet)
+        {
+            var liboggPacket = packet.ToLiboggPacket();
+            var result = libogg.ogg_stream_packetin(ref this.streamState, ref liboggPacket);
+
+            if (result != 0)
+            {
+                throw new Exception("Internal error occurred when trying to submit a packet to the libogg stream.");
             }
 
             this.Flush(false);

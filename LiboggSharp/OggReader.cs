@@ -40,10 +40,10 @@
         /// <returns></returns>
         public OggPage ReadPage(bool submitToPacketBuffer = false)
         {
-            return new OggPage(this.ReadLiboggPage());
+            return new OggPage(this.ReadLiboggPage(submitToPacketBuffer));
         }
 
-        private libogg.ogg_page ReadLiboggPage()
+        private libogg.ogg_page ReadLiboggPage(bool submitToPacketBuffer)
         {
             var liboggPage = new libogg.ogg_page();
 
@@ -66,28 +66,56 @@
                 }
             }
 
+            if (submitToPacketBuffer)
+            {
+                this.SubmitLiboggPageToPacketBuffer(liboggPage);
+            }
+
             return liboggPage;
+        }
+
+        private void SubmitLiboggPageToPacketBuffer(libogg.ogg_page liboggPage)
+        {
+            if (libogg.ogg_stream_pagein(ref this.streamState, ref liboggPage) != 0)
+            {
+                throw new InvalidOperationException("Adding page to packet buffer failed due to a serial or page number mismatch, or an internal error occurred.");
+            }
         }
 
         public OggPacket ReadPacket()
         {
-            this.InitializeStreamState();
+            this.EnsureStreamStateInitialized();
 
-            if ()
+            var liboggPacket = new libogg.ogg_packet();
+            int packetOutResult;
 
-            var liboggPage = this.ReadLiboggPage();
+            // Retry without new page if it is out of sync and has a gap (-1)
+            do
+            {
+                packetOutResult = libogg.ogg_stream_packetout(ref this.streamState, ref liboggPacket);
 
+                // Read a new page into the stream when there is insufficient data available
+                if (packetOutResult == 0)
+                {
+                    this.ReadLiboggPage(true);
+                }
+            }
+            while (packetOutResult != 1);
 
-
-
-            throw new NotImplementedException();
+            return new OggPacket(liboggPacket);
         }
 
-        private void InitializeStreamState()
+        private void EnsureStreamStateInitialized()
         {
             if (!this.streamStateInitialized)
             {
-                var result = libogg.ogg_stream_init(ref this.streamState, new Random().Next());
+                // Read a page to determine the serial number to use
+                var liboggPage = this.ReadLiboggPage(false);
+
+                var serialNumber = libogg.ogg_page_serialno(ref liboggPage);
+
+                // Actually initialize the stream state
+                var result = libogg.ogg_stream_init(ref this.streamState, serialNumber);
 
                 if (result != 0)
                 {
