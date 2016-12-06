@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.InteropServices;
 
     public class OggWriter : IDisposable
     {
@@ -30,23 +31,23 @@
             }
         }
 
-        public void Write(OggPage page)
-        {
-            var liboggPage = page.ToLiboggPage();
-            var result = libogg.ogg_stream_pagein(ref this.streamState, ref liboggPage);
-
-            if (result != 0)
-            {
-                throw new Exception("Page to write does not match the serial number of the bitstream, the page version is incorrect or libogg encountered an internal error.");
-            }
-
-            this.Flush(false);
-        }
-
         public void Write(OggPacket packet)
         {
-            var liboggPacket = packet.ToLiboggPacket();
+            var liboggPacket = new libogg.ogg_packet
+            {
+                packet = Marshal.AllocHGlobal(packet.Data.Length),
+                bytes = packet.Data.Length,
+                b_o_s = packet.IsBeginOfStream ? 1 : 0,
+                e_o_s = packet.IsEndOfStream ? 1 : 0,
+                granulepos = packet.GranulePosition,
+                packetno = packet.PacketNumber
+            };
+
+            Marshal.Copy(packet.Data, 0, liboggPacket.packet, packet.Data.Length);
+
             var result = libogg.ogg_stream_packetin(ref this.streamState, ref liboggPacket);
+
+            Marshal.FreeHGlobal(liboggPacket.packet);
 
             if (result != 0)
             {
@@ -58,39 +59,46 @@
 
         public void Flush(bool force = true)
         {
-            var backingPage = new libogg.ogg_page();
-            var result = libogg.ogg_stream_pageout(ref this.streamState, ref backingPage);
+            var liboggPage = new libogg.ogg_page();
+            var result = libogg.ogg_stream_pageout(ref this.streamState, ref liboggPage);
 
             // Write page data to stream if a page was accumulated
             if (result != 0)
             {
-                this.Write(backingPage);
+                this.Write(liboggPage);
             }
 
             // Write remaining page data to stream if forcing
             if (force)
             {
-                result = libogg.ogg_stream_flush(ref this.streamState, ref backingPage);
+                result = libogg.ogg_stream_flush(ref this.streamState, ref liboggPage);
 
                 if (result != 0)
                 {
-                    this.Write(backingPage);   
+                    this.Write(liboggPage);   
                 }
             }
         }
 
         private void Write(libogg.ogg_page page)
         {
-            var wrappedPage = new OggPage(page);
-            this.writer.Write(wrappedPage.Header);
-            this.writer.Write(wrappedPage.Body);
+            // BUG: Header is all kinds of fucked up
+            var header = new byte[page.header_len];
+            var body = new byte[page.body_len];
+
+            Marshal.Copy(page.header, header, 0, page.header_len);
+            Marshal.Copy(page.body, body, 0, page.body_len);
+
+            this.writer.Write(header);
+            this.writer.Write(body);
+            this.writer.Flush();
         }
 
         public void Dispose()
         {
-            this.Flush();
+            this.Flush(true);
             this.writer.Dispose();
-            libogg.ogg_stream_destroy(ref this.streamState);
+            libogg.ogg_stream_clear(ref this.streamState);
         }
     }
 }

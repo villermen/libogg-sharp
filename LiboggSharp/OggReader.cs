@@ -10,7 +10,7 @@
 
         private libogg.ogg_sync_state syncState;
 
-        private bool streamStateInitialized = false;
+        private bool isStreamStateInitialized = false;
 
         private libogg.ogg_stream_state streamState;
 
@@ -28,30 +28,15 @@
             }
         }
 
-        /// <summary>
-        /// Reads a page from the stream.
-        /// </summary>
-        /// <param name="submitToPacketBuffer">
-        /// Whether to submit this page to the packet buffer.
-        /// Will prevent future packets from being read correctly if false, but causes overhead if set to true.
-        /// </param>
-        /// <exception cref="EndOfStreamException">I wonder when this exception occurs.</exception>
-        /// <exception cref="InvalidOperationException">When the amount of bytes written could not be confirmed to libogg.</exception>
-        /// <returns></returns>
-        public OggPage ReadPage(bool submitToPacketBuffer = false)
-        {
-            return new OggPage(this.ReadLiboggPage(submitToPacketBuffer));
-        }
-
-        private libogg.ogg_page ReadLiboggPage(bool submitToPacketBuffer)
+        private void BufferPage()
         {
             var liboggPage = new libogg.ogg_page();
 
             while (libogg.ogg_sync_pageout(ref this.syncState, ref liboggPage) != 1)
             {
-                var bufferPtr = libogg.ogg_sync_buffer(ref this.syncState, 4096);
+                var bufferPtr = libogg.ogg_sync_buffer(ref this.syncState, 8192);
 
-                var readBytes = this.reader.ReadBytes(4096);
+                var readBytes = this.reader.ReadBytes(8192);
 
                 if (readBytes.Length == 0)
                 {
@@ -66,16 +51,20 @@
                 }
             }
 
-            if (submitToPacketBuffer)
+            // Initialize a stream state with the same serial number as the page we just read
+            if (!this.isStreamStateInitialized)
             {
-                this.SubmitLiboggPageToPacketBuffer(liboggPage);
+                var result = libogg.ogg_stream_init(ref this.streamState, libogg.ogg_page_serialno(ref liboggPage));
+
+                if (result != 0)
+                {
+                    throw new InvalidOperationException("Failed to initialize libogg stream state.");
+                }
+
+                this.isStreamStateInitialized = true;
             }
 
-            return liboggPage;
-        }
-
-        private void SubmitLiboggPageToPacketBuffer(libogg.ogg_page liboggPage)
-        {
+            // Submit page to stream
             if (libogg.ogg_stream_pagein(ref this.streamState, ref liboggPage) != 0)
             {
                 throw new InvalidOperationException("Adding page to packet buffer failed due to a serial or page number mismatch, or an internal error occurred.");
@@ -84,8 +73,6 @@
 
         public OggPacket ReadPacket()
         {
-            this.EnsureStreamStateInitialized();
-
             var liboggPacket = new libogg.ogg_packet();
             int packetOutResult;
 
@@ -97,7 +84,7 @@
                 // Read a new page into the stream when there is insufficient data available
                 if (packetOutResult == 0)
                 {
-                    this.ReadLiboggPage(true);
+                    this.BufferPage();
                 }
             }
             while (packetOutResult != 1);
@@ -105,31 +92,11 @@
             return new OggPacket(liboggPacket);
         }
 
-        private void EnsureStreamStateInitialized()
-        {
-            if (!this.streamStateInitialized)
-            {
-                // Read a page to determine the serial number to use
-                var liboggPage = this.ReadLiboggPage(false);
-
-                var serialNumber = libogg.ogg_page_serialno(ref liboggPage);
-
-                // Actually initialize the stream state
-                var result = libogg.ogg_stream_init(ref this.streamState, serialNumber);
-
-                if (result != 0)
-                {
-                    throw new InvalidOperationException("Could not initialize libogg stream.");
-                }
-
-                this.streamStateInitialized = true;
-            }
-        }
-
         public void Dispose()
         {
             this.reader.Dispose();
             libogg.ogg_sync_clear(ref this.syncState);
+            libogg.ogg_stream_clear(ref this.streamState);
         }
     }
 }

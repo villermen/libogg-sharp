@@ -1,5 +1,6 @@
 ﻿namespace Villermen.LiboggSharp
 {
+    using System;
     using System.Runtime.InteropServices;
 
     public class OggPacket
@@ -19,27 +20,10 @@
             this.Data = new byte[liboggPacket.bytes];
             Marshal.Copy(liboggPacket.packet, this.Data, 0, liboggPacket.bytes);
 
-            this.IsBeginOfStream = liboggPacket.b_o_s == 1;
-            this.IsEndOfStream = liboggPacket.e_o_s == 1;
+            this.IsBeginOfStream = liboggPacket.b_o_s != 0;
+            this.IsEndOfStream = liboggPacket.e_o_s != 0;
             this.GranulePosition = liboggPacket.granulepos;
             this.PacketNumber = liboggPacket.packetno;
-        }
-
-        public libogg.ogg_packet ToLiboggPacket()
-        {
-            var liboggPacket = new libogg.ogg_packet
-            {
-                packet = Marshal.AllocHGlobal(this.Data.Length),
-                bytes = this.Data.Length,
-                b_o_s = this.IsBeginOfStream ? 1 : 0,
-                e_o_s = this.IsEndOfStream ? 1 : 0,
-                granulepos = this.GranulePosition,
-                packetno = this.PacketNumber
-            };
-
-            Marshal.Copy(this.Data, 0, liboggPacket.packet, liboggPacket.bytes);
-
-            return liboggPacket;
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Villermen.LiboggSharp
             /// <summary>
             /// Pointer to data being manipulated.
             /// 
-            /// byte[]*
+            /// byte[<see cref="storage"/>]*
             /// </summary>
             public IntPtr buffer;
 
@@ -60,7 +60,7 @@ namespace Villermen.LiboggSharp
             /// Pointer to the page header for this page.
             /// The exact contents of this header are defined in the framing spec document.
             /// 
-            /// byte[]*
+            /// byte[<see cref="header_len"/>]*
             /// </summary>
             public IntPtr header;
 
@@ -72,7 +72,7 @@ namespace Villermen.LiboggSharp
             /// <summary>
             /// Pointer to the data for this page.
             /// 
-            /// byte[]*
+            /// byte[<see cref="body_len"/>]*
             /// </summary>
             public IntPtr body;
 
@@ -91,7 +91,7 @@ namespace Villermen.LiboggSharp
             /// <summary>
             /// Pointer to data from packet bodies.
             /// 
-            /// byte[]*
+            /// byte[<see cref="body_data"/>]*
             /// </summary>
             public IntPtr body_data;
 
@@ -114,7 +114,7 @@ namespace Villermen.LiboggSharp
             /// String of lacing values for the packet segments within the current page.
             /// Each value is a byte, indicating packet segment length.
             /// 
-            /// byte[]*
+            /// byte[<see cref="lacing_storage"/>]*
             /// </summary>
             public IntPtr lacing_vals;
 
@@ -199,7 +199,7 @@ namespace Villermen.LiboggSharp
             /// Pointer to the packet's data.
             /// This is treated as an opaque type by the ogg layer.
             /// 
-            /// byte[]*
+            /// byte[<see cref="bytes"/>]*
             /// </summary>
             public IntPtr packet;
 
@@ -243,12 +243,12 @@ namespace Villermen.LiboggSharp
             /// <summary>
             /// Pointer to buffered stream data.
             /// 
-            /// byte[]*
+            /// byte[<see cref="storage"/>]*
             /// </summary>
             public IntPtr data;
 
             /// <summary>
-            /// Current allocated size of the stream buffer held in *data.
+            /// Current allocated size of the stream buffer held in <see cref="data"/>.
             /// </summary>
             public int storage;
 
