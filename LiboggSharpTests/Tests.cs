@@ -18,28 +18,24 @@
         }
 
         [Fact]
-        public void TestPassthrough()
+        public void TestTransferPackets()
         {
-            //// Identification header
-            //this.writer.Write(this.reader.ReadPacket(), true);
+            // Identification header
+            this.writer.Write(this.reader.ReadPacket());
+            this.writer.Flush(true);
 
-            //// Comment and setup headers
-            //this.writer.Write(this.reader.ReadPacket());
-            //this.writer.Write(this.reader.ReadPacket(), true);
+            // Comment and setup headers
+            this.writer.Write(this.reader.ReadPacket());
+            this.writer.Write(this.reader.ReadPacket());
+            this.writer.Flush(true);
 
-            var processedPackets = 0;
+            var processedPackets = 3;
 
             while (true)
             {
                 var packet = this.reader.ReadPacket();
 
-                this.writer.Write(packet, false);
-
-                if (packet.GranulePosition != -1)
-                {
-                    this.writer.Flush();
-                }
-
+                this.writer.Write(packet);
                 if (packet.IsEndOfStream)
                 {
                     break;
@@ -47,6 +43,8 @@
 
                 processedPackets++;
             }
+
+            this.writer.Flush();
 
             Assert.Equal(10717, processedPackets);
         }

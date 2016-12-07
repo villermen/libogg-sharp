@@ -71,7 +71,12 @@
             }
         }
 
-        // granule -1 when not last of page
+        /// <summary>
+        /// Reads a packet from the stream.
+        /// Internally this reads a page whenever no full packet can be read.
+        /// Note that the granule position of the returned packet is -1 when it is not the last packet that ended on a page.
+        /// </summary>
+        /// <returns></returns>
         public OggPacket ReadPacket()
         {
             var liboggPacket = new libogg.ogg_packet();
