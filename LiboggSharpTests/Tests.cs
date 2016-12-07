@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using Villermen.LiboggSharp;
     using Xunit;
 
@@ -21,32 +22,21 @@
         public void TestTransferPackets()
         {
             // Identification header
-            this.writer.Write(this.reader.ReadPacket());
-            this.writer.Flush(true);
+            this.writer.Write(this.reader.First(), true);
 
             // Comment and setup headers
-            this.writer.Write(this.reader.ReadPacket());
-            this.writer.Write(this.reader.ReadPacket());
-            this.writer.Flush(true);
+            this.writer.Write(this.reader.Take(2), true);
 
             var processedPackets = 3;
 
-            while (true)
+            foreach (var packet in this.reader)
             {
-                var packet = this.reader.ReadPacket();
-
                 this.writer.Write(packet);
-                if (packet.IsEndOfStream)
-                {
-                    break;
-                }
 
                 processedPackets++;
             }
 
-            this.writer.Flush();
-
-            Assert.Equal(10717, processedPackets);
+            Assert.Equal(10718, processedPackets);
         }
 
         public void Dispose()

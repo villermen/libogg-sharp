@@ -1,6 +1,8 @@
 ﻿namespace Villermen.LiboggSharp
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.InteropServices;
 
@@ -31,7 +33,17 @@
             }
         }
 
-        public void Write(OggPacket packet)
+        public void Write(IEnumerable<OggPacket> packets, bool forceFlush = false)
+        {
+            foreach (var packet in packets)
+            {
+                this.Write(packet, false);
+            }
+
+            this.Flush(forceFlush);
+        }
+
+        public void Write(OggPacket packet, bool forceFlush = false)
         {
             var liboggPacket = new libogg.ogg_packet
             {
@@ -54,7 +66,7 @@
                 throw new Exception("Internal error occurred when trying to submit a packet to the libogg stream.");
             }
 
-            this.Flush(false);
+            this.Flush(forceFlush);
         }
 
         public void Flush(bool force = true)
