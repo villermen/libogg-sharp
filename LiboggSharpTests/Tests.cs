@@ -20,20 +20,25 @@
         [Fact]
         public void TestPassthrough()
         {
-            // Identification header
-            this.writer.Write(this.reader.ReadPacket(), true);
+            //// Identification header
+            //this.writer.Write(this.reader.ReadPacket(), true);
 
-            // Comment and setup headers
-            this.writer.Write(this.reader.ReadPacket());
-            this.writer.Write(this.reader.ReadPacket(), true);
+            //// Comment and setup headers
+            //this.writer.Write(this.reader.ReadPacket());
+            //this.writer.Write(this.reader.ReadPacket(), true);
 
-            var processedPackets = 3;
+            var processedPackets = 0;
 
             while (true)
             {
                 var packet = this.reader.ReadPacket();
 
-                this.writer.Write(packet);
+                this.writer.Write(packet, false);
+
+                if (packet.GranulePosition != -1)
+                {
+                    this.writer.Flush();
+                }
 
                 if (packet.IsEndOfStream)
                 {

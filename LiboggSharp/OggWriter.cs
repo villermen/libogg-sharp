@@ -31,16 +31,7 @@
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="packet"></param>
-        /// <param name="forcePage">
-        /// Whether to end the page after writing the packet.
-        /// If false, libogg will decide when it is appropriate to end a page.
-        /// If true, a page is guaranteed to be written.
-        /// </param>
-        public void Write(OggPacket packet, bool forcePage = false)
+        public void Write(OggPacket packet)
         {
             var liboggPacket = new libogg.ogg_packet
             {
@@ -63,30 +54,29 @@
                 throw new Exception("Internal error occurred when trying to submit a packet to the libogg stream.");
             }
 
-            this.Flush(forcePage);
+            this.Flush(false);
         }
 
         public void Flush(bool force = true)
         {
             var liboggPage = new libogg.ogg_page();
-            var result = libogg.ogg_stream_pageout(ref this.streamState, ref liboggPage);
+            int result;
 
-            // Write page data to stream if a page was accumulated
-            if (result != 0)
+            // Output pages until no more are available using the chosen method
+            do
             {
-                this.Write(liboggPage);
-            }
+                // Try to obtain a page, or squeeze it out if forcing
+                result = force
+                    ? libogg.ogg_stream_flush(ref this.streamState, ref liboggPage)
+                    : libogg.ogg_stream_pageout(ref this.streamState, ref liboggPage);
 
-            // Write remaining page data to stream if forcing
-            if (force)
-            {
-                result = libogg.ogg_stream_flush(ref this.streamState, ref liboggPage);
-
+                // Write page data to stream if a page was accumulated
                 if (result != 0)
                 {
-                    this.Write(liboggPage);   
+                    this.Write(liboggPage);
                 }
             }
+            while (result != 0);
         }
 
         private void Write(libogg.ogg_page page)

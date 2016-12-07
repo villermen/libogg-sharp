@@ -71,6 +71,7 @@
             }
         }
 
+        // granule -1 when not last of page
         public OggPacket ReadPacket()
         {
             var liboggPacket = new libogg.ogg_packet();
