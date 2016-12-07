@@ -31,7 +31,16 @@
             }
         }
 
-        public void Write(OggPacket packet)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <param name="forcePage">
+        /// Whether to end the page after writing the packet.
+        /// If false, libogg will decide when it is appropriate to end a page.
+        /// If true, a page is guaranteed to be written.
+        /// </param>
+        public void Write(OggPacket packet, bool forcePage = false)
         {
             var liboggPacket = new libogg.ogg_packet
             {
@@ -54,7 +63,7 @@
                 throw new Exception("Internal error occurred when trying to submit a packet to the libogg stream.");
             }
 
-            this.Flush(false);
+            this.Flush(forcePage);
         }
 
         public void Flush(bool force = true)
