@@ -150,8 +150,7 @@ namespace Villermen.LiboggSharp
             /// 
             /// byte[282]
             /// </summary>
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 282)]
-            public byte[] header;
+            public unsafe fixed byte header[282];
 
             /// <summary>
             /// Fill marker for header storage allocation. Used during the header creation process.

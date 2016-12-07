@@ -82,7 +82,6 @@
 
         private void Write(libogg.ogg_page page)
         {
-            // BUG: Header is all kinds of fucked up
             var header = new byte[page.header_len];
             var body = new byte[page.body_len];
 
@@ -91,7 +90,6 @@
 
             this.writer.Write(header);
             this.writer.Write(body);
-            this.writer.Flush();
         }
 
         public void Dispose()
