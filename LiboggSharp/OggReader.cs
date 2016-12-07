@@ -1,10 +1,12 @@
 ﻿namespace Villermen.LiboggSharp
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.InteropServices;
 
-    public class OggReader : IDisposable
+    public class OggReader : IDisposable, IEnumerable<OggPacket>
     {
         private readonly BinaryReader reader;
 
@@ -103,6 +105,24 @@
             this.reader.Dispose();
             libogg.ogg_sync_clear(ref this.syncState);
             libogg.ogg_stream_clear(ref this.streamState);
+        }
+
+        public IEnumerator<OggPacket> GetEnumerator()
+        {
+            OggPacket packet;
+
+            do
+            {
+                packet = this.ReadPacket();
+
+                yield return packet;
+            }
+            while (packet.IsEndOfStream == false);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }
